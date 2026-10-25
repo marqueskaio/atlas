@@ -27,6 +27,10 @@ interface AtlasBridge {
   previewReach: (machine: null | string, url: string) => Promise<{ error: string } | { url: string }>
   /** Serve a preview's page; its address, for the sandboxed frame. */
   previewPage: (html: string) => Promise<string>
+  /** The window draws its own title bar (Windows), so the page keeps a strip for it. */
+  customTitleBar: boolean
+  /** The window's buttons, painted in the theme's two #rrggbb colors. */
+  titleBar: (color: string, symbolColor: string) => Promise<void>
   /** The app talks to a server it did not start, which serves one home. */
   remote: boolean
   /** Only under the end-to-end tests: how long a command runs before it is "still running". */

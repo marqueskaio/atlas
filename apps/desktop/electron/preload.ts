@@ -12,6 +12,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 const e2e = ipcRenderer.sendSync('atlas:e2e') === true
 const remote = ipcRenderer.sendSync('atlas:remote') === true
 const terminalWait = ipcRenderer.sendSync('atlas:terminal-wait') as null | number
+const customTitleBar = ipcRenderer.sendSync('atlas:custom-title-bar') === true
 
 contextBridge.exposeInMainWorld('atlas', {
   /** Where a home's backup goes, from the system's save dialog; `null` when the user cancelled.
@@ -48,6 +49,11 @@ contextBridge.exposeInMainWorld('atlas', {
     shortcut: (key: string, accelerator: string): Promise<string> =>
       ipcRenderer.invoke('atlas:desktop:shortcut', key, accelerator)
   },
+  /** The window draws its own title bar (Windows), so the page keeps a strip for it. */
+  customTitleBar,
+  /** The window's buttons, painted in the theme's two #rrggbb colors. */
+  titleBar: (color: string, symbolColor: string): Promise<void> =>
+    ipcRenderer.invoke('atlas:title-bar', color, symbolColor),
   e2e,
   /** Only under the end-to-end tests: how long a command runs before it is "still running". */
   terminalWait,

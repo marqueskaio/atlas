@@ -35,6 +35,7 @@ import {
   globalShortcut,
   ipcMain,
   Menu,
+  nativeTheme,
   protocol,
   safeStorage,
   screen,
@@ -52,6 +53,7 @@ import { type Machine, MachineError, Machines, type Transport } from './machines
 import { PREVIEW_SCHEME, registerPreviews } from './preview-ipc'
 import { RemoteMachine } from './remote-machine'
 import { type Endpoint, OwnedServer, remoteEndpoint, repositoryCommand, repositoryRoot } from './server'
+import { hasCustomTitleBar, titleBarLook } from './title-bar'
 import { readToolchain, toolchainFolders, withPath } from './toolchain'
 import {
   CHECK_EVERY_MS,
@@ -231,6 +233,7 @@ function lookForUpdate(now = false): Promise<null | UpdateStatus> {
 }
 
 let window: BrowserWindow | null = null
+const customTitleBar = hasCustomTitleBar(process.platform)
 
 // No File, Edit, View bar on the window (asked for by the user on 17/10/2026): Windows and Linux
 // get no application menu, set before Electron installs its default one.
@@ -261,6 +264,16 @@ function createWindow(): void {
     minWidth: 720,
     show: false,
     title: 'Atlas',
+    ...(customTitleBar
+      ? {
+          titleBarOverlay:
+            titleBarLook(
+              nativeTheme.shouldUseDarkColors ? '#171717' : '#fafafa',
+              nativeTheme.shouldUseDarkColors ? '#f5f5f5' : '#171717'
+            ) ?? false,
+          titleBarStyle: 'hidden' as const
+        }
+      : {}),
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
@@ -500,6 +513,17 @@ ipcMain.handle('atlas:open-in-editor', (_event, folder: unknown) =>
 protocol.registerSchemesAsPrivileged([{ privileges: { secure: true, standard: true }, scheme: PREVIEW_SCHEME }])
 ipcMain.on('atlas:e2e', event => {
   event.returnValue = e2e
+})
+ipcMain.on('atlas:custom-title-bar', event => {
+  event.returnValue = customTitleBar
+})
+/** The page paints the window's buttons in its theme's colors (electron/title-bar.ts). */
+ipcMain.handle('atlas:title-bar', (_event, color: unknown, symbolColor: unknown) => {
+  const look = titleBarLook(color, symbolColor)
+
+  if (customTitleBar && look && window && !window.isDestroyed()) {
+    window.setTitleBarOverlay(look)
+  }
 })
 ipcMain.on('atlas:remote', event => {
   event.returnValue = remote !== null

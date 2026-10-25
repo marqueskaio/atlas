@@ -37,11 +37,24 @@ export const $themeChoice = atom<ThemeChoice>(chosen())
 /** The look on screen. */
 export const $theme = atom<Theme>(resolved(chosen()))
 
+/** The window's buttons in each look: the strip's own color (
+eutral-900 dark, 
+eutral-50 light and sand) and the glyphs'. */
+const TITLE_BAR: Record<Theme, [string, string]> = {
+  dark: ['#171717', '#f5f5f5'],
+  light: ['#fafafa', '#171717'],
+  sand: ['#e2dbc9', '#1c1b17']
+}
+
 function paint(theme: Theme): void {
   const root = document.documentElement
   root.classList.toggle('dark', theme === 'dark')
   root.classList.toggle('sand', theme === 'sand')
   root.style.colorScheme = theme === 'dark' ? 'dark' : 'light'
+
+  if ('atlas' in window && window.atlas.customTitleBar) {
+    void window.atlas.titleBar(...TITLE_BAR[theme])
+  }
 }
 
 /** Paint the look now, and follow the system's while it is the one chosen. */

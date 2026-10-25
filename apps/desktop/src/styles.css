@@ -70,6 +70,13 @@
   --color-orange-700: #923b14;
 }
 
+/* The strip the window's own title bar takes on Windows (electron/title-bar.ts): it drags the window,
+   and Electron paints the three buttons over its right end. */
+.title-bar {
+  -webkit-app-region: drag;
+  height: 32px;
+}
+
 html,
 body,
 #root {

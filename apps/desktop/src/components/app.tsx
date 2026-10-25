@@ -23,6 +23,8 @@ import { $panelWidth, $sidebarWidth, toggleSidebar } from '@/store/layout'
 import { $terminals, openTerminal, refreshTerminalAvailable, terminalAvailable, togglePanel } from '@/store/terminals'
 import { EMPTY_THREAD } from '@/store/thread'
 
+import mark from '../../resources/icon.svg'
+
 import { ApprovalCard } from './approval-card'
 import { AskCard } from './ask-card'
 import { BotDialogHost } from './bot-dialog'
@@ -111,60 +113,68 @@ export function App() {
   }, [])
 
   return (
-    <div
-      className="relative flex h-full bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100"
-      data-connection={state}
-      style={widths}
-    >
-      <Sidebar />
-      <main className="main-pane flex min-w-0 flex-1 flex-col">
-        <ConnectionBand />
-        {keyBand && <KeyBand />}
-        {keyScreen ? (
-          <KeyScreen />
-        ) : view === 'proposals' ? (
-          <ProposalsView />
-        ) : view === 'routines' ? (
-          <RoutinesView />
-        ) : view === 'marketplace' ? (
-          <MarketplaceView />
-        ) : view === 'plugin' ? (
-          <PluginPage />
-        ) : view === 'session' ? (
-          <SessionView />
-        ) : (
-          <>
-            {bot && <BotHeader bot={bot} />}
-            <ThreadView empty={bot ? <BotEmpty bot={bot} /> : undefined} thread={thread} />
-            {shown.length + proposed.length + done.length > 0 && (
-              <div className="mx-auto max-h-[50vh] w-full max-w-3xl space-y-3 overflow-y-auto px-6 pb-3">
-                {shown.map(card => {
-                  if (card.kind === 'ask') {
-                    return <AskCard card={card} key={card.id} />
-                  }
-                  if (card.kind === 'secret') {
-                    return <SecretCard card={card} key={card.id} />
-                  }
+    <div className="flex h-full flex-col">
+      {window.atlas.customTitleBar && (
+        <div className="title-bar flex shrink-0 items-center gap-2 bg-neutral-50 px-3 dark:bg-neutral-900">
+          <img alt="" className="size-4 rounded-[3px]" src={mark} />
+          <span className="text-xs font-medium text-neutral-600 dark:text-neutral-400">Atlas</span>
+        </div>
+      )}
+      <div
+        className="relative flex min-h-0 flex-1 bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100"
+        data-connection={state}
+        style={widths}
+      >
+        <Sidebar />
+        <main className="main-pane flex min-w-0 flex-1 flex-col">
+          <ConnectionBand />
+          {keyBand && <KeyBand />}
+          {keyScreen ? (
+            <KeyScreen />
+          ) : view === 'proposals' ? (
+            <ProposalsView />
+          ) : view === 'routines' ? (
+            <RoutinesView />
+          ) : view === 'marketplace' ? (
+            <MarketplaceView />
+          ) : view === 'plugin' ? (
+            <PluginPage />
+          ) : view === 'session' ? (
+            <SessionView />
+          ) : (
+            <>
+              {bot && <BotHeader bot={bot} />}
+              <ThreadView empty={bot ? <BotEmpty bot={bot} /> : undefined} thread={thread} />
+              {shown.length + proposed.length + done.length > 0 && (
+                <div className="mx-auto max-h-[50vh] w-full max-w-3xl space-y-3 overflow-y-auto px-6 pb-3">
+                  {shown.map(card => {
+                    if (card.kind === 'ask') {
+                      return <AskCard card={card} key={card.id} />
+                    }
+                    if (card.kind === 'secret') {
+                      return <SecretCard card={card} key={card.id} />
+                    }
 
-                  return <ApprovalCard card={card} key={card.id} />
-                })}
-                {done.map(({ proposal, result }) => (
-                  <ProposalCard approved={result} key={proposal.id} proposal={proposal} />
-                ))}
-                {proposed.map(proposal => (
-                  <ProposalCard key={proposal.id} proposal={proposal} />
-                ))}
-              </div>
-            )}
-            <PreviewLinks thread={thread} />
-            <Composer connected={state === 'open'} running={thread.running} to={bot?.title} />
-          </>
-        )}
-      </main>
-      <SidePanel />
-      <BotDialogHost />
-      <HomeDialogHost />
-      <SettingsView />
+                    return <ApprovalCard card={card} key={card.id} />
+                  })}
+                  {done.map(({ proposal, result }) => (
+                    <ProposalCard approved={result} key={proposal.id} proposal={proposal} />
+                  ))}
+                  {proposed.map(proposal => (
+                    <ProposalCard key={proposal.id} proposal={proposal} />
+                  ))}
+                </div>
+              )}
+              <PreviewLinks thread={thread} />
+              <Composer connected={state === 'open'} running={thread.running} to={bot?.title} />
+            </>
+          )}
+        </main>
+        <SidePanel />
+        <BotDialogHost />
+        <HomeDialogHost />
+        <SettingsView />
+      </div>
     </div>
   )
 }
