@@ -427,6 +427,7 @@ export const en = {
     themeDark: 'Dark',
     themeHint: 'Of this computer.',
     themeLight: 'Light',
+    themeSand: 'Sand',
     themeSystem: "The system's",
     title: 'Settings',
     upToDate: 'Atlas is up to date.',

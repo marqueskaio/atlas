@@ -34,6 +34,7 @@ import {
   type TerminalTab,
   togglePanel
 } from '@/store/terminals'
+import { $theme, type Theme } from '@/store/theme'
 
 import { ExecutorPanel } from './executor-panel'
 import { baseName } from './executors-list'
@@ -260,6 +261,11 @@ function PreviewTabButton({ current, tab }: { current: boolean; tab: PreviewTab 
   )
 }
 
+/** The terminal stays dark in every theme; sand's is coffee brown, to sit with the sand colors. */
+function terminalColors(theme: Theme): { background: string } {
+  return { background: theme === 'sand' ? '#1c1b17' : '#0a0a0a' }
+}
+
 /**
  * One terminal: xterm.js with Unicode 11 widths,
  * fitted to its box as it changes, the shell's output written to it and the keys typed sent to
@@ -283,7 +289,10 @@ function TerminalView({ active, tab }: { active: boolean; tab: TerminalTab }) {
       fontFamily: 'ui-monospace, "Cascadia Mono", Consolas, monospace',
       fontSize: 12,
       scrollback: 2000,
-      theme: { background: '#0a0a0a' }
+      theme: terminalColors($theme.get())
+    })
+    const stopTheme = $theme.listen(theme => {
+      term.options.theme = terminalColors(theme)
     })
     const fit = new FitAddon()
     term.loadAddon(fit)
@@ -325,6 +334,7 @@ function TerminalView({ active, tab }: { active: boolean; tab: TerminalTab }) {
     return () => {
       cancelAnimationFrame(frame)
       observer.disconnect()
+      stopTheme()
       stopData()
       typed.dispose()
       term.dispose()

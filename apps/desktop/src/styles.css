@@ -14,6 +14,62 @@
   color-scheme: dark;
 }
 
+/* The sand look: a warm paper light theme. The components keep their `neutral-*`, `white` and
+   `orange-*` classes; this block gives the same names sand's colors, so no component changes. */
+:root.sand {
+  --color-white: #e9e3d3;
+  --color-neutral-50: #e2dbc9;
+  --color-neutral-100: #d9d1bd;
+  --color-neutral-200: #c8bfa8;
+  --color-neutral-300: #b8ae95;
+  --color-neutral-400: #8f8870;
+  --color-neutral-500: #6d6a5c;
+  --color-neutral-600: #55534a;
+  --color-neutral-700: #403f38;
+  --color-neutral-800: #2c2b26;
+  --color-neutral-900: #1c1b17;
+  --color-neutral-950: #1c1b17;
+  --color-violet-50: #f9e9de;
+  --color-violet-100: #f3d9c7;
+  --color-violet-200: #e8c0a5;
+  --color-violet-300: #e3b393;
+  --color-violet-400: #d1824f;
+  --color-violet-500: #c4571f;
+  --color-violet-600: #b0481a;
+  --color-violet-700: #923b14;
+  --color-violet-800: #772f10;
+  --color-violet-900: #5e260f;
+  --color-amber-50: #f6e6da;
+  --color-amber-200: #ecc9ad;
+  --color-amber-300: #e0a984;
+  --color-amber-400: #cf7a4a;
+  --color-amber-500: #b8602f;
+  --color-amber-600: #9c4f24;
+  --color-amber-700: #84401c;
+  --color-amber-800: #6a3317;
+  --color-amber-900: #522813;
+  --color-blue-500: #4a7fc0;
+  --color-blue-600: #2d63a8;
+  --color-emerald-500: #1f7f76;
+  --color-emerald-600: #14625b;
+  --color-green-300: #86bdb5;
+  --color-green-400: #4fa397;
+  --color-green-800: #14625b;
+  --color-yellow-50: #f6e6da;
+  --color-yellow-500: #b8602f;
+  --color-yellow-700: #84401c;
+  --color-sky-50: #e3efed;
+  --color-sky-400: #4fa397;
+  --color-sky-500: #1f7f76;
+  --color-sky-600: #14625b;
+  --color-blue-300: #9db9dd;
+  --color-orange-50: #f9e9de;
+  --color-orange-300: #e3b393;
+  --color-orange-500: #c4571f;
+  --color-orange-600: #b0481a;
+  --color-orange-700: #923b14;
+}
+
 html,
 body,
 #root {

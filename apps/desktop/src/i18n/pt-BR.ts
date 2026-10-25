@@ -433,6 +433,7 @@ export const ptBR: Override<Messages> = {
     themeDark: 'Escuro',
     themeHint: 'Deste computador.',
     themeLight: 'Claro',
+    themeSand: 'Areia',
     themeSystem: 'A do sistema',
     title: 'Configurações',
     upToDate: 'O Atlas está atualizado.',

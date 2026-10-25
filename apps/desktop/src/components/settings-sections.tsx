@@ -264,6 +264,7 @@ export function GeneralSection() {
         options={[
           ['system', t.settings.themeSystem],
           ['light', t.settings.themeLight],
+          ['sand', t.settings.themeSand],
           ['dark', t.settings.themeDark]
         ]}
         testId="setting-theme"
