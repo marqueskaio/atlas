@@ -30,7 +30,7 @@ const schema = [application(site), faqPage(site)]
 ---
 
 <Site title={seo.title} description={seo.description} markdown="/index.md" current="home" schema={schema}>
-  <div class="orrery" id="story" data-orrery>
+  <div class="orrery" id="story" data-orrery data-repository={REPOSITORY}>
     <div class="track" aria-hidden="true">
       <div class="stage" data-orrery-stage>
         <div class="glow"></div>
