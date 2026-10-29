@@ -92,6 +92,7 @@ from atlas.home import (
     Database,
     Home,
     HomeError,
+    MemorySettings,
     PictureError,
     Schema,
     Settings,
@@ -1723,6 +1724,8 @@ class Gateway:
     def _settings_now(self) -> SettingsList:
         defaults = {
             ("trust", "approval_timeout"): str(TrustSettings().approval_timeout),
+            ("memory", "user_limit"): str(MemorySettings().user_limit),
+            ("memory", "memory_limit"): str(MemorySettings().memory_limit),
             ("workspace", "folder"): str(Path.home()),
         }
         try:

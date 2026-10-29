@@ -413,6 +413,16 @@ class TrustSettings:
 
 
 @dataclass(frozen=True, slots=True)
+class MemorySettings:
+    #: The characters `memory/USER.md` may hold, from 500 to 20,000: who the user is. Every model
+    #: call carries it, and lowered under what is written it cuts nothing.
+    user_limit: int = 1_375
+    #: The characters `memory/MEMORY.md` may hold, from 500 to 20,000: the agent's notes. Every
+    #: model call carries it, and lowered under what is written it cuts nothing.
+    memory_limit: int = 2_200
+
+
+@dataclass(frozen=True, slots=True)
 class WorkspaceSettings:
     #: Where the file tools and commands start. Unset, the user's home folder.
     folder: Path | None = None
@@ -461,6 +471,7 @@ class Settings:
     vault: VaultSettings = field(default_factory=VaultSettings)
     model: ModelSettings = field(default_factory=ModelSettings)
     trust: TrustSettings = field(default_factory=TrustSettings)
+    memory: MemorySettings = field(default_factory=MemorySettings)
     workspace: WorkspaceSettings = field(default_factory=WorkspaceSettings)
     time: TimeSettings = field(default_factory=TimeSettings)
     browser: BrowserSettings = field(default_factory=BrowserSettings)

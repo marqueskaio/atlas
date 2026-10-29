@@ -583,6 +583,9 @@ export const ptBR: Override<Messages> = {
     languageHint: 'Deste computador. A janela recarrega para trocar; nenhuma conversa para.',
     languageSystem: 'O do sistema',
     languages: { en: 'English', 'pt-BR': 'Português' },
+    limit: 'Limite, em caracteres',
+    limitHint:
+      'Toda chamada ao modelo leva tudo, então um limite maior custa mais a cada vez. De 500 a 20.000; baixar para menos do que está escrito não corta nada: o Atlas abre espaço antes de acrescentar.',
     locked: (variable: string) => `Definido por ${variable}, que vale mais que o config.toml.`,
     memory: 'Memória',
     memoryHint: 'O que o Atlas anotou sobre a sua máquina, as suas ferramentas e as manias delas: o MEMORY.md.',

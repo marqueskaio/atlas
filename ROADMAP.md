@@ -3503,6 +3503,23 @@ lista ao próprio provedor.
   Gemini falso e os do app com um WebSocket falso. **Falta** a conversa ao vivo falada e ouvida no
   app, com o microfone do usuário.
 
+### Limites da memória configuráveis (pedidos e feitos em 29/10, sem passo)
+
+Pedido do usuário em 29/10: poder mexer no tamanho do `USER.md` (1.375) e do `MEMORY.md` (2.200), e
+os plugins verem isso pelo SDK.
+
+- **O usuário decide:** `[memory] user_limit` e `memory_limit` no `config.toml`, de 500 a 20.000,
+  e um campo embaixo de cada arquivo em Configurações → Personalização. A próxima escrita já
+  respeita o limite novo; o prompt mostra a partir da próxima conversa. Baixar abaixo do que está
+  escrito não corta nada: o agente abre espaço antes de acrescentar. Os bots seguem o mesmo limite.
+- **Plugin só lê** (SDK versão 26, `ctx.memory_limits()`), decidido com o usuário: o limite é pago
+  em toda chamada, e dois plugins poderiam brigar por ele sem ninguém ver. Plugin que precisa de
+  mais espaço guarda uma memória própria.
+- **A conversar depois:** provedores de memória externos (serviços que tiram conclusões das conversas) como um papel exclusivo
+  de plugin, escolhido nas configurações e somado à memória embutida, e plugins de memória
+  aditivos (uma linha do tempo de episódios) que usam só hooks e ferramentas. Reabre o princípio 2
+  e o "sem vetores por ora".
+
 ### Site e documentação pública (decididos em 25/10, passo 19)
 
 Pedido do usuário em 25/10: um site com uma home bonita, uma página de novidades e uma documentação

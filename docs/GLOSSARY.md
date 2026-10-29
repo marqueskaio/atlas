@@ -70,6 +70,7 @@ becomes an identifier. Portuguese is listed because the roadmap is written in Po
 | `soul` | soul / alma | The main agent's identity, `SOUL.md` at the top of the home: who it is and how it speaks, the first thing of its instructions in place of Atlas's default. The user writes it, and the agent when the user asks; it applies from the next conversation. A bot's soul is its definition's body |
 | `profile` | perfil | The always-loaded text about the user (`memory/USER.md`): who they are and how to work with them, within a character limit. Not the state folder; that is `home` |
 | `memory` | memória | The agent's always-loaded notes (`memory/MEMORY.md`): durable facts it learned, within a character limit. With the profile, the two stores the `memory` tool writes |
+| `memory limit` | limite da memória | The characters the profile or the memory may hold (`[memory] user_limit`, `memory_limit`); every model call carries them whole. The user sets them; a plugin only reads them |
 | `memory entry` | entrada de memória | One item of the profile or the memory; entries are separated by a line holding `§` |
 | `memory snapshot` | fotografia da memória | The profile and the memory as the system prompt carries them: read when a conversation starts and again after a compaction, so writes in between do not break the provider's cache |
 | `background review` | revisão em segundo plano | A copy of the agent that rereads a conversation in the background and keeps what it taught: in the memory (adding, and proposing what it would replace or remove) and in skills |

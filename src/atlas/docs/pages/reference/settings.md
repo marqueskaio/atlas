@@ -50,6 +50,13 @@ An unknown key in `config.toml` stops Atlas with an error, so a typo never passe
 | `ask_skip` | list of text | `[]` | `ATLAS_TRUST_ASK_SKIP` | Globs of commands Atlas's own outward rules leave alone (`gh issue comment*`): the user's way to take an action off the default list. The user's `ask` rules still apply. *On the settings screen.* |
 | `approval_timeout` | whole number | `300` | `ATLAS_TRUST_APPROVAL_TIMEOUT` | Seconds an approval waits for the user before it counts as refused (60 was too tight for a phone notification). *On the settings screen.* |
 
+## [memory]
+
+| Key | Value | Default | Variable | What it does |
+|---|---|---|---|---|
+| `user_limit` | whole number | `1375` | `ATLAS_MEMORY_USER_LIMIT` | The characters `memory/USER.md` may hold, from 500 to 20,000: who the user is. Every model call carries it, and lowered under what is written it cuts nothing. *On the settings screen.* |
+| `memory_limit` | whole number | `2200` | `ATLAS_MEMORY_MEMORY_LIMIT` | The characters `memory/MEMORY.md` may hold, from 500 to 20,000: the agent's notes. Every model call carries it, and lowered under what is written it cuts nothing. *On the settings screen.* |
+
 ## [workspace]
 
 | Key | Value | Default | Variable | What it does |

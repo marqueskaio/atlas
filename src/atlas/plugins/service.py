@@ -68,6 +68,7 @@ from atlas.plugins.sdk import (
     LlmError,
     LlmMessage,
     LlmResult,
+    MemoryLimits,
     PluginLlm,
     ReadRun,
     ToolRun,
@@ -227,9 +228,9 @@ class PluginParts:
 
 
 class PluginHost(Protocol):
-    """What Atlas lends a plugin from outside the plugins (SDK version 16): the user's model, and
-    its conversations. The server gives it; with none, a plugin's `llm` and `notify` say Atlas is
-    not serving (a terminal command)."""
+    """What Atlas lends a plugin from outside the plugins (SDK version 16): the user's model, its
+    conversations, and the memory's limits (version 26). The server gives it; with none, a
+    plugin's `llm`, `notify` and `memory_limits` say Atlas is not serving (a terminal command)."""
 
     async def complete(
         self,
@@ -242,6 +243,8 @@ class PluginHost(Protocol):
     ) -> LlmResult: ...
 
     async def notify(self, plugin: str, conversation: str, text: str) -> bool: ...
+
+    def memory_limits(self) -> MemoryLimits | None: ...
 
 
 class _NoHost:
@@ -258,6 +261,9 @@ class _NoHost:
 
     async def notify(self, plugin: str, conversation: str, text: str) -> bool:
         return False
+
+    def memory_limits(self) -> MemoryLimits | None:
+        return None
 
 
 #: What a plugin registered to stop with it.
@@ -819,6 +825,9 @@ class _Context:
                 f"{self.name} asked for the setting {name}, which it does not declare."
             )
         return self._settings[name]
+
+    def memory_limits(self) -> MemoryLimits | None:
+        return self._plugins.host.memory_limits()
 
     def register_channel(self, name: str, make: Callable[[], Channel]) -> None:
         if name not in self._manifest.channels:

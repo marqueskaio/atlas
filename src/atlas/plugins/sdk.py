@@ -101,8 +101,21 @@ from typing import Any, Literal, Protocol
 #: pays on past its limits; 20, a session's tokens of context; 21, attachment readers; 22, files
 #: a tool sends the user, and a channel that sends them; 23, a screen's desktop powers (a global
 #: shortcut, pasting into the program in focus); 24, themes; 25, a setting's choices, listed by
-#: the app (fixed, Atlas's models, or the plugin's call `setting_choices`).
-API_VERSION = 25
+#: the app (fixed, Atlas's models, or the plugin's call `setting_choices`); 26, the memory's
+#: limits, read only.
+API_VERSION = 26
+
+
+@dataclass(frozen=True, slots=True)
+class MemoryLimits:
+    """The characters the home's two memory stores may hold (version 26), as the user set them
+    under `[memory]`: the plugin reads them and never sets them, since every model call pays for
+    them."""
+
+    #: `memory/USER.md`, who the user is.
+    user: int
+    #: `memory/MEMORY.md`, the agent's notes.
+    memory: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -899,6 +912,11 @@ class PluginContext(Protocol):
 
     def setting(self, name: str) -> str:
         """A setting the manifest declares: the user's value, or its default."""
+        ...
+
+    def memory_limits(self) -> MemoryLimits | None:
+        """The memory's limits now (version 26), read again at each call, so a change on the
+        settings screen shows at once; `None` when Atlas is not serving (a terminal command)."""
         ...
 
     def register_channel(self, name: str, make: Callable[[], Channel]) -> None:

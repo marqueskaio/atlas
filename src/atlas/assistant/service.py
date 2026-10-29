@@ -144,6 +144,8 @@ from atlas.memory import (
     Proposals,
     ProposalStore,
     SoulFile,
+    Target,
+    limits_of,
     review_due,
     skill_review_due,
 )
@@ -473,7 +475,7 @@ class _Shared:
         agent; for a bot, the home's profile and the bot's own memory."""
         if bot is None:
             return self.memory, self.proposals
-        files = bot_memory(self.home, bot)
+        files = bot_memory(self.home, bot, self.memory.limits)
         return files, self.proposals.for_bot(bot.name, files)
 
 
@@ -484,9 +486,10 @@ def bot_library(shared: _Shared, bot: Bot) -> SkillLibrary:
     )
 
 
-def bot_memory(home: Home, bot: Bot) -> MemoryFiles:
-    """A bot's stores: the home's profile, one for all, and the memory in the bot's folder."""
-    return MemoryFiles(home.memory_folder, memory_folder=bot.folder)
+def bot_memory(home: Home, bot: Bot, limits: dict[Target, int]) -> MemoryFiles:
+    """A bot's stores: the home's profile, one for all, and the memory in the bot's folder, under
+    the home's limits (`limits`, shared with the main agent's stores)."""
+    return MemoryFiles(home.memory_folder, limits, memory_folder=bot.folder)
 
 
 class Assistant:
@@ -520,7 +523,7 @@ class Assistant:
         database = Database(home.database_file)
         usage = SkillUsage(database)
         library = SkillLibrary(home.skills_folder, usage, creator=MAIN_AGENT)
-        memory = MemoryFiles(home.memory_folder)
+        memory = MemoryFiles(home.memory_folder, limits_of(settings.memory))
         soul = SoulFile(home.soul_file)
         try:
             soul.seed(IDENTITY)
@@ -532,7 +535,7 @@ class Assistant:
 
         def bot_files(name: str) -> MemoryFiles | None:
             try:
-                return bot_memory(home, bots.get(name))
+                return bot_memory(home, bots.get(name), memory.limits)
             except BotError:
                 return None
 
@@ -658,17 +661,20 @@ class Assistant:
         """The editable settings changed on the settings screen (step 15b), handed to whoever
         holds them: the default model from the next turn of a conversation that picked none,
         the trust rules from the next request of every open conversation, the folder in new
-        conversations, the zone the next time a routine is scheduled. A subagent already running
-        ends on the rules it started with."""
+        conversations, the zone the next time a routine is scheduled, the memory's limits from
+        the next write (the prompt shows them from the next conversation). A subagent already
+        running ends on the rules it started with."""
         shared = self._shared
         shared.settings = replace(
             shared.settings,
             model=settings.model,
             trust=settings.trust,
+            memory=settings.memory,
             workspace=settings.workspace,
             time=settings.time,
         )
         shared.models.use(settings.model)
+        shared.memory.limits.update(limits_of(settings.memory))
         shared.workspace = settings.workspace.folder or Path.home()
         shared.routines.use_zone(time_zone(settings.time.zone))
         for conversation in self._open.values():
@@ -1833,7 +1839,7 @@ class _BotInstructions:
         me = bot_identity(bot.body, self.workspace, _system())
         if self.messaging:
             me = f"{me}\n\n{roster_section(bot, self.shared.bots.list())}"
-        return Instructions(bot_memory(self.shared.home, bot), me)()
+        return Instructions(bot_memory(self.shared.home, bot, self.shared.memory.limits), me)()
 
 
 @dataclass(frozen=True, slots=True)

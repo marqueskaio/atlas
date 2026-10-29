@@ -478,13 +478,45 @@ function DefaultModel({
 
 export function PersonalizationSection() {
   const proposals = useStore($proposals)
+  const { error, rows, save, status } = useSettings()
+
+  const limit = (key: string) => {
+    const row = rows?.[id('memory', key)]
+
+    return (
+      row && (
+        <TextSetting
+          hint={t.settings.limitHint}
+          label={t.settings.limit}
+          row={row}
+          save={save}
+          status={status[id('memory', key)]}
+        />
+      )
+    )
+  }
 
   return (
     <div className="space-y-8">
       <p className="text-sm text-muted-foreground">{t.settings.appliesNext}</p>
+      <Failure error={error} />
       <SoulSection />
-      <MemoryEntries hint={t.settings.aboutYouHint} target="user" title={t.settings.aboutYou} />
-      <MemoryEntries hint={t.settings.memoryHint} target="memory" title={t.settings.memory} />
+      <MemoryEntries
+        hint={t.settings.aboutYouHint}
+        limit={rows?.['memory.user_limit']?.value}
+        target="user"
+        title={t.settings.aboutYou}
+      >
+        {limit('user_limit')}
+      </MemoryEntries>
+      <MemoryEntries
+        hint={t.settings.memoryHint}
+        limit={rows?.['memory.memory_limit']?.value}
+        target="memory"
+        title={t.settings.memory}
+      >
+        {limit('memory_limit')}
+      </MemoryEntries>
       {proposals.length > 0 && (
         <button
           className="link text-sm"

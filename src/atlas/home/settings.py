@@ -48,6 +48,7 @@ from atlas.home.model import (
     LogLevel,
     LogSettings,
     MarketplaceSettings,
+    MemorySettings,
     ModelSettings,
     SecretText,
     ServerSettings,
@@ -99,6 +100,11 @@ def resolve_home(environ: Mapping[str, str]) -> Path:
     return home
 
 
+#: What a memory limit may be, in characters: below, a store holds a couple of entries; above,
+#: every model call carries some 5,000 tokens of it.
+MEMORY_LIMIT_RANGE = {"minimum": 500, "maximum": 20_000}
+
+
 def load_settings(environ: Mapping[str, str]) -> LoadedSettings:
     """Every setting, from the defaults, the home's `config.toml` and the environment."""
     home = resolve_home(environ)
@@ -133,6 +139,14 @@ def _settings(home: Path, source: "_Source") -> LoadedSettings:
             ask_skip=source.text_list("trust", "ask_skip"),
             approval_timeout=source.integer(
                 "trust", "approval_timeout", 300, minimum=10, maximum=86_400
+            ),
+        ),
+        memory=MemorySettings(
+            user_limit=source.integer(
+                "memory", "user_limit", MemorySettings().user_limit, **MEMORY_LIMIT_RANGE
+            ),
+            memory_limit=source.integer(
+                "memory", "memory_limit", MemorySettings().memory_limit, **MEMORY_LIMIT_RANGE
             ),
         ),
         workspace=WorkspaceSettings(folder=source.path("workspace", "folder")),
@@ -257,6 +271,8 @@ EDITABLE = (
     Editable("trust", "ask", "lines"),
     Editable("trust", "ask_skip", "lines"),
     Editable("trust", "approval_timeout", "number"),
+    Editable("memory", "user_limit", "number"),
+    Editable("memory", "memory_limit", "number"),
     Editable("workspace", "folder", "path"),
     Editable("time", "zone", "zone"),
 )

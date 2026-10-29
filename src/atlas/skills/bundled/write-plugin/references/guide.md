@@ -211,8 +211,8 @@ stops when it is turned off.
   itself read-only (`readOnlyHint`), as Claude Code asks before a plugin's MCP tools. A plugin
   whose server only reads may say `"trust": "full"` in its entry.
 - A remote server that signs in with OAuth needs nothing more than its address: Atlas finds out
-  when the server asks, leaves it out until you sign in, and connects it once you run
-  `atlas mcp login plugin_<plugin>_<server>`.
+  when the server asks, leaves it out until you sign in, and connects it once you press **Sign
+  in** on the plugin's card, or run `atlas mcp login plugin_<plugin>_<server>`.
 
 An MCP server's tools reach the model behind the tool search, like every MCP tool.
 
@@ -688,7 +688,7 @@ image: https://raw.githubusercontent.com/your-github-account/atlas-video/<sha>/c
 
 ## What the SDK offers
 
-Everything a plugin's Python may import is in `atlas.plugins.sdk` (`API_VERSION` 25), and the ACP
+Everything a plugin's Python may import is in `atlas.plugins.sdk` (`API_VERSION` 26), and the ACP
 client in `atlas.plugins.acp`. Everything a screen may import is in `@atlas/plugin-sdk`
 (`SCREEN_API` 3). Each name below has its section above. A test keeps this list whole: a name the
 SDK adds and the guide does not name fails it.
@@ -710,6 +710,7 @@ SDK adds and the guide does not name fails it.
 | `ctx.notify(conversation, text)` | a message that starts a turn | 16 |
 | `ctx.register_call(name, run)` | what the screen's `ctx.call` reaches | 17 |
 | `ctx.register_reader(kind, run)` | an attachment read into text (Readers) | 21 |
+| `ctx.memory_limits()` | the memory's limits as the user set them, a `MemoryLimits` (`user`, `memory`), read only; `None` in a terminal command | 26 |
 
 **What Atlas hands what it registered:**
 

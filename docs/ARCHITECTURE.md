@@ -390,6 +390,13 @@ call.
   and names the closest ones; what a replace or remove overwrote is said back. A file that exists
   but cannot be read is never written over, and one holding an entry longer than the whole limit
   (text appended outside the tool) is copied aside and left alone.
+- **The limits are the user's** (decided 2026-10-29): `[memory] user_limit` and `memory_limit`,
+  from 500 to 20,000, on the settings screen. The home's stores, the bots' included, share one
+  `limits` dict that the screen changes in place, so the next write meets the new limit and the
+  snapshot shows it from the next conversation. Lowered under what a file holds, nothing is cut:
+  the next add is refused until the agent makes room. A plugin reads them (`ctx.memory_limits()`,
+  SDK 26) and never sets them: every model call pays for them, and two plugins could pull them
+  apart unseen. A plugin that needs more room keeps a memory of its own.
 - **The instructions** carry the memory snapshot: read when a conversation starts and again after
   a compaction, so a write mid-conversation
   does not break the provider's cache. Their guidance is short, and does not
@@ -770,13 +777,15 @@ V3 had 156 environment reads scattered over 51 files.
   packages to the core for a handful of fields.
 - **The editable settings change while the server runs** (step 15b: a screen that saves itself and
   applies without a restart): `settings.read` and `settings.write` cover the
-  default model, the trust rules, the approval timeout, the workspace folder and the time zone. A
+  default model, the trust rules, the approval timeout, the memory's limits, the workspace folder
+  and the time zone. A
   write edits only the setting's own lines (`edit_settings`), so the user's comments and order
   stay; the new text is read again, through the same rules as a start, and must give the same
   settings with only that change, or nothing is written. The server then hands the new values to
   whoever holds them (`Assistant.use_settings`): the default model from the next turn of any
   conversation that picked none, the trust rules from the next request of every open conversation,
-  the folder in new conversations, the zone the next time a routine is scheduled. A setting an
+  the folder in new conversations, the zone the next time a routine is scheduled, the memory's
+  limits from the next write. A setting an
   `ATLAS_*` variable sets is refused there and shown locked, naming the variable: writing the file
   would change nothing. The log, the server's address, the vault and the browser's program stay in
   the file.
@@ -1729,8 +1738,8 @@ order:
    key", and the providers' keys, the key screen's list.
 3. **Personalization:** the soul, "About you" (`USER.md`) and the memory (`MEMORY.md`), each entry
    read, edited, removed or added (`memory.entries`, `memory.edit`), with the limit in characters
-   in view. An edit goes through the memory tool's own
-   door (`MemoryFiles.change`: its lock, its limit, its threat scan and its refusal of a file
+   in view and, under each, the field that changes it (`[memory]`). An edit goes through the
+   memory tool's own door (`MemoryFiles.change`: its lock, its limit, its threat scan and its refusal of a file
    changed outside it), names the exact entry it changes, and applies from the next conversation,
    the snapshot frozen as one starts. The memory proposals stay where they are, with a shortcut.
 4. **Safety:** `[trust] deny`, `ask` and `ask_skip`, one per line, and `approval_timeout`.

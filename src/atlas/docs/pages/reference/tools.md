@@ -177,9 +177,10 @@ agent stops and asks the user to do it in the browser window.
 ### `memory` — always on
 
 Adds, replaces and removes entries in two files the agent reads at the start of every
-conversation: `user` (`memory/USER.md`, 1,375 characters: who the user is) and `memory`
-(`memory/MEMORY.md`, 2,200: the agent's notes). Several changes go in one atomic call, checked
-against the limit at the end. ARCHITECTURE, Memory.
+conversation: `user` (`memory/USER.md`, 1,375 characters by default: who the user is) and
+`memory` (`memory/MEMORY.md`, 2,200: the agent's notes); `[memory]` in the settings changes the
+limits. Several changes go in one atomic call, checked against the limit at the end.
+ARCHITECTURE, Memory.
 
 - `target` (required): `user` or `memory`.
 - `operations`: a list of `{action, content, old_text}`, the preferred shape.

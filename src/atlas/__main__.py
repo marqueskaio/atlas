@@ -130,7 +130,7 @@ from atlas.marketplace import (
 )
 from atlas.marketplace import check as check_marketplace
 from atlas.memory import SCHEMA as MEMORY_SCHEMA
-from atlas.memory import Action, MemoryFiles, Operation, Proposals, ProposalStore
+from atlas.memory import Action, MemoryFiles, Operation, Proposals, ProposalStore, limits_of
 from atlas.models import SCHEMA as MODELS_SCHEMA
 from atlas.models import (
     CallLedger,
@@ -707,7 +707,7 @@ def main(
         if args.command == "skills":
             return _skills(args, home)
         if args.command == "memory":
-            return _memory(args, home)
+            return _memory(args, home, loaded.settings)
         if args.command == "backup":
             return _backup(args, home)
         if args.command == "restore":
@@ -1529,11 +1529,12 @@ def _list_skills(library: SkillLibrary, usage: SkillUsage, bots: Bots) -> int:
     return 0
 
 
-def _memory(args: argparse.Namespace, home: Home) -> int:
+def _memory(args: argparse.Namespace, home: Home, settings: Settings) -> int:
     """The review's memory proposals: list them, approve one or discard one."""
     try:
         database = _migrate(home)
-        proposals = Proposals(MemoryFiles(home.memory_folder), ProposalStore(database))
+        files = MemoryFiles(home.memory_folder, limits_of(settings.memory))
+        proposals = Proposals(files, ProposalStore(database))
         if args.action == "proposals":
             listed = proposals.checked()
             if not listed:

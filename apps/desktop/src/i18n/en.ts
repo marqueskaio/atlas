@@ -599,6 +599,9 @@ export const en = {
     languageHint: 'Of this computer. The window reloads to change it; no conversation stops.',
     languageSystem: "The system's",
     languages: { en: 'English', 'pt-BR': 'Português' } as Record<string, string>,
+    limit: 'Limit, in characters',
+    limitHint:
+      'Every model call carries it whole, so a larger limit costs more each time. From 500 to 20,000; lowering it below what is written cuts nothing: Atlas makes room before it adds.',
     locked: (variable: string) => `Set by ${variable}, which wins over config.toml.`,
     memory: 'Memory',
     memoryHint: 'What Atlas noted about your machine, your tools and their quirks: MEMORY.md.',
