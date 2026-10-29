@@ -1796,6 +1796,15 @@ packaged, signed app is step 18b.
   installs begun, not finished ones, and a run again to repair counts again; the app's own update
   fetches from GitHub and is not counted. The Privacy page says so. Left out: a call from the
   installer when it finishes, and anything from the app itself.
+- **Each visit to the home is counted too** (asked for by the user on 29/10/2026, to compare copies
+  of the home's opening words: a week of the home alone first, then the copies two at a time). The
+  Worker writes to `atlas_home` (`site/worker/home.ts`) a browser's navigation to `/`, not a
+  prefetch, a crawler or a script, and the page's beacon (`/hit`, same origin only) when the visit
+  copies the install line or opens GitHub; each with the copy seen and the country, a visit also
+  with whether it came before. The cookie `atlas_v` keeps only the copy's letter, 30 days, so a
+  second visit sees the same copy and is told from a first; no id, no address. `npm run home` gives
+  each copy its rates per visitor with a 95% interval. Only the home is counted; the Privacy page
+  says so.
 - **Where it installs**: `%LOCALAPPDATA%\atlas\` on Windows (where the installation already lives),
   `~/.local/share/atlas/` elsewhere, holding `atlas/` (the checkout), `tools/` (the pinned tools)
   and `bin/` (the `atlas` command); `~/.local/bin/atlas` on Linux and macOS. `ATLAS_HOME` is not
