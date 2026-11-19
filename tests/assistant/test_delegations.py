@@ -321,6 +321,10 @@ def test_delegate_lists_the_workbench_and_asks_the_user_before_touching_their_in
         conversation.send("What is on the workbench? Then stop it.")
         await _settle(assistant, conversation)
         results = [m.text for m in conversation.history if type(m).__name__ == "ToolResult"]
+        # What the turn left, for a run where it left no result (CI's Windows, 16/11/2026, once).
+        assert results, [
+            f"{type(m).__name__}: {getattr(m, 'text', '')}" for m in conversation.history
+        ]
         await assistant.close()
         return results, run.id
 

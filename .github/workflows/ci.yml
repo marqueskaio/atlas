@@ -37,7 +37,8 @@ jobs:
           $version = "15.1.0"
           $name = "ripgrep-$version-x86_64-pc-windows-msvc"
           $zip = "$env:RUNNER_TEMP\$name.zip"
-          Invoke-WebRequest "https://github.com/BurntSushi/ripgrep/releases/download/$version/$name.zip" -OutFile $zip
+          # Tried again: GitHub answered a download with a 504 on 05/11/2026.
+          Invoke-WebRequest "https://github.com/BurntSushi/ripgrep/releases/download/$version/$name.zip" -OutFile $zip -MaximumRetryCount 4 -RetryIntervalSec 10
           $hash = (Get-FileHash $zip -Algorithm SHA256).Hash
           if ($hash -ne "124510B94B6BAA3380D051FDF4650EAA80A302C876D611E9DBA0B2E18D87493A") { throw "ripgrep's hash is $hash" }
           Expand-Archive $zip -DestinationPath $env:RUNNER_TEMP
@@ -53,6 +54,20 @@ jobs:
         run: uv run lint-imports
       - name: Dependencies
         run: uv run deptry src plugins
+      # The tests that drive a real Chrome give it 30 seconds to start, which a runner's first
+      # start of it missed on 07/11 and 16/11/2026: this start, with no limit of its own, reads
+      # Chrome from disk before them and says how long that took.
+      - name: Chrome, started once (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $chrome = "$env:PROGRAMFILES\Google\Chrome\Application\chrome.exe"
+          if (-not (Test-Path $chrome)) { "No Chrome on this runner"; exit 0 }
+          $watch = [Diagnostics.Stopwatch]::StartNew()
+          $started = Start-Process $chrome -PassThru -ArgumentList "--headless=new", "--no-first-run", "--user-data-dir=$env:RUNNER_TEMP\chrome-first", "--dump-dom", "about:blank"
+          if (-not $started.WaitForExit(120000)) { "Chrome had not ended after 120 s" }
+          "Chrome started and ended in $([math]::Round($watch.Elapsed.TotalSeconds, 1)) s"
+          Get-Process chrome -ErrorAction SilentlyContinue | Stop-Process -Force
       - name: Tests
         run: uv run pytest
 

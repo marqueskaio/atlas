@@ -938,7 +938,9 @@ test("the box's new worktree is a workspace in the home, listed under its projec
   expect(readFileSync(path.join(folder, 'NOTES.md'), 'utf8').replace(/\r\n/g, '\n')).toBe('Open late.\n')
 
   // Delivered: deleted on the first yes, its folder gone.
-  await workspace.hover()
+  // Its buttons show while the row is focused, as they do under the mouse; the mouse alone loses
+  // the row when the list scrolls it into view.
+  await workspace.getByTestId('workspace-open').focus()
   await workspace.getByTestId('workspace-delete').click()
   await page.getByTestId('workspace-delete-yes').click()
   await expect(workspace).toHaveCount(0)
@@ -995,7 +997,8 @@ test("a comment on a line of a workspace's changes reaches its session, and its 
   await page.getByTestId('comment-add').click()
   await page.getByTestId('review-send').click()
 
-  await expect(page.getByTestId('review-comments')).toBeHidden()
+  // Sent once the session's Claude Code has started, which on CI's Windows takes seconds.
+  await expect(page.getByTestId('review-comments')).toBeHidden(STARTED)
   const prompts = () =>
     readFileSync(log, 'utf8')
       .split('\n')

@@ -66,6 +66,20 @@ def _read_once_released(database: Path, query: str) -> tuple[str, ...]:
         return tuple(str(value) for value in row)
 
 
+def _bytes_once_released(path: Path) -> bytes:
+    """A file of the home once the stopped server let go of it: on Windows the interpreter under
+    the launcher can still hold `server.lock` a moment after `_stop` returns, and reading it then
+    is refused (16/11/2026 and 19/11/2026, under load)."""
+    deadline = time.monotonic() + 15
+    while True:
+        try:
+            return path.read_bytes()
+        except PermissionError:
+            if time.monotonic() > deadline:
+                raise
+            time.sleep(0.2)
+
+
 def _health(port: int, deadline: float) -> dict[str, str]:
     while True:
         try:
@@ -133,7 +147,7 @@ def test_a_fresh_home_is_built_served_and_left_as_declared(tmp_path: Path) -> No
     assert SECRET_VALUE not in stderr
     for path in home.rglob("*"):
         if path.is_file():
-            assert SECRET_VALUE.encode() not in path.read_bytes(), path
+            assert SECRET_VALUE.encode() not in _bytes_once_released(path), path
 
 
 def test_on_port_zero_the_server_says_its_port_and_leaves_with_the_app(tmp_path: Path) -> None:
@@ -213,7 +227,7 @@ def test_a_client_with_the_token_it_was_started_with_talks_to_atlas_serve(tmp_pa
     assert "A client was refused" in stderr
     for path in home.rglob("*"):
         if path.is_file():
-            assert token.encode() not in path.read_bytes(), path
+            assert token.encode() not in _bytes_once_released(path), path
 
 
 def _start(environ: dict[str, str], *argv: str) -> tuple[subprocess.Popen[str], int]:

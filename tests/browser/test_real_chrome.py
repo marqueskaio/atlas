@@ -48,9 +48,12 @@ def test_the_real_chrome_and_engine_read_type_and_see(tmp_path: Path) -> None:
             opened = await tool.run(opening)
             assert isinstance(opened, str)
             found = _result(opened)
-            if "waiting for the daemon" in str(found.get("stderr", "")):
+            if "waiting for the daemon" in str(found.get("stderr", "")) or "DevTools port" in str(
+                found.get("error", "")
+            ):
                 # A Chrome still starting on a slow machine misses the engine's 5 seconds for a
-                # tab; the model reads the error and calls again, as this does.
+                # tab, or a runner's first Chrome its 30 seconds to start (CI's Windows, 07/11 and
+                # 16/11/2026); the model reads the error and calls again, as this does.
                 opened = await tool.run(opening)
                 assert isinstance(opened, str)
                 found = _result(opened)

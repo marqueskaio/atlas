@@ -454,10 +454,14 @@ def test_the_mcp_servers_tools_join_the_conversation(
 
     async def scenario() -> None:
         assistant.start()
-        for _ in range(200):
+        # Its server is a Python of its own, which starts in seconds on a loaded machine (19/11/2026
+        # took more than 10): waited for up to a minute, and said when it never came.
+        for _ in range(1200):
             if assistant._shared.mcp_tools.deferred:  # pyright: ignore[reportPrivateUsage]
                 break
             await asyncio.sleep(0.05)
+        else:
+            raise AssertionError("The MCP server's tools never arrived.")
         conversation = assistant.conversation(assistant.conversations.create().id)
         conversation.send("Hello")
         await conversation.wait()

@@ -76,9 +76,10 @@ test('a row opens the passing tab, the next row takes it and a message keeps it;
   await expect(page.getByTestId('assistant-message').last()).toContainText('Answer one.')
   await page.keyboard.press('Control+Tab')
   await expect(tabs(page).nth(1)).toHaveAttribute('data-active', 'true')
+  // Several moves on the way, as a hand makes: the drop needs a dragover on the tab first.
   await tabs(page)
     .nth(1)
-    .dragTo(tabs(page).nth(0), { targetPosition: { x: 4, y: 12 } })
+    .dragTo(tabs(page).nth(0), { steps: 8, targetPosition: { x: 4, y: 12 } })
   await expect(titles(page)).toHaveText(['Pick a book', 'Plan the trip'])
 })
 

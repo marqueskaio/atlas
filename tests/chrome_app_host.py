@@ -13,7 +13,7 @@ from typing import Any
 import websockets
 
 from atlas.browser.endpoint import AppHost
-from atlas.browser.errors import HostError
+from atlas.browser.errors import BrowserError, HostError
 from atlas.browser.model import HostTab, HostTabs
 from atlas.browser.store import Chrome, close_chrome, open_chrome
 
@@ -41,7 +41,12 @@ class ChromeAppHost(AppHost):
         self.product = ""
 
     async def start(self) -> None:
-        self._chrome = await open_chrome([self._program], self._profile, headless=True)
+        try:
+            self._chrome = await open_chrome([self._program], self._profile, headless=True)
+        except BrowserError:
+            # A runner's first Chrome can miss the 30 seconds (CI's Windows, 16/11/2026); the
+            # second start finds it read from disk, as a user's second try would.
+            self._chrome = await open_chrome([self._program], self._profile, headless=True)
         self._socket = await websockets.connect(self._chrome.endpoint, max_size=None)
         self._reader = asyncio.create_task(self._read())
         version = await self._call("Browser.getVersion")
